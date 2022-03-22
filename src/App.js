@@ -37,17 +37,37 @@ function Article(props){//props를 사용시 함수 외부에서 입력값으로
   </article>
 }
 
+function Create(props){  //Create 컴포넌트 생성
+  //텍스트 제목과 텍스트 영역, Create 버튼 생성
+  return <article>
+    <h2>Create</h2>
+    <form onSubmit={event=>{
+      event.preventDefault();
+      const title = event.target.title.value; //event target은 form 태그 지칭
+      const body = event.target.body.value;
+      props.onCreate(title,body);
+    }}>
+      <p><input type="text" name="title" placeholder="title"/></p>
+      <p><textarea name="body" placeholder="body"></textarea></p>
+      <p><input type="submit" value="Create"></input></p> 
+    </form>
+  </article>
+
+}
+
+
 function App() {
   //const _mode = useState('WELCOME');  //mode의 값에 따라 본문 변화
   //const mode = _mode[0];  //상태의 값 읽기 가능
   //const setMode = _mode[1]; //mode의 값을 바꿀 수 있음
   const [mode, setMode] = useState('WELCOME');
   const [id, setId] = useState(null);
-  const topics = [//topics를 배열 설정
+  const [nextId, setNextId] =useState(4); //state의 초기값의 id가 4
+  const [topics, setTopics] = useState([ //state로 승격시키기
     {id:1, title:'html', body:'html is ...'},
     {id:2, title:'css', body:'css is ...'},
     {id:3, title:'javascript', body:'javascript is ...'},
-  ]
+  ]);
   let content = null;
   if(mode === 'WELCOME'){ //mode의 따라 결정
       content = <Article title="Welcome" body="Hello, WEB"></Article>
@@ -62,6 +82,17 @@ function App() {
       }
       content = <Article title={title} body={body}></Article>
 
+  }else if(mode === 'CREATE'){
+      content = <Create onCreate={(_title, _body)=>{  //Create버튼 눌렀을 때 실행함수
+      const newTopic = {id:nextId,title:_title, body:_body} 
+      const newTopics = [...topics] //복제본을 생성
+      newTopics.push(newTopic);//복제본에 추가
+      setTopics(newTopics); //새로들어온 데이터가 기존과 다르다면 컴포넌트 다시 실행
+      setMode('READ'); //상세 페이지 이동
+      setId(nextId);  
+      setNextId(nextId+1);  //다음에 글을 추가할 때 대비
+      }}></Create>
+
   }
   return (
     <div>
@@ -73,7 +104,10 @@ function App() {
         setId(_id);   //_id값이 바뀌면 컴포넌트가 새로 실행되며 새로운 id값 지정 해줌
       }}></Nav>
       {content}
-      
+      <a href = "/create" onClick={event=>{
+        event.preventDefault(); //url 바뀌는 것 방지
+        setMode('CREATE');
+      }}>Create</a>
     </div>
   );
 }
