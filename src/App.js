@@ -108,10 +108,25 @@ function App() {
         }
       }
       content = <Article title={title} body={body}></Article>
-      contextControl = <li><a href ={'/update/'+id} onClick={event=>{
+      contextControl = <>
+      <li><a href ={'/update/'+id} onClick={event=>{
           event.preventDefault();
           setMode('UPDATE');  //mode를 UPDATE로 변경
-      }}>Update</a></li> //mode가 READ일 때만 나타나기
+      }}>Update</a></li>
+      <li><input type="button" value="Delete" onClick={()=>{  //DELETE 기능 구현
+        const newTopics = []
+        for(let i=0; i<topics.length; i++ ){
+          if(topics[i].id !== id){  //id값이 일치하지 않는 토픽들만 push
+            newTopics.push(topics[i]);  
+          }
+
+        }
+        setTopics(newTopics); //
+        setMode('WELCOME');
+      }}/></li>
+      </>//빈 태그는 html 상으로 어떠한 태그도 아닌 빈 상태
+
+
   }else if(mode === 'CREATE'){
       content = <Create onCreate={(_title, _body)=>{  //Create버튼 눌렀을 때 실행함수
       const newTopic = {id:nextId,title:_title, body:_body} 
